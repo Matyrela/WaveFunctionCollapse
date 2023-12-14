@@ -24,6 +24,7 @@ public static class Program
         }
         
         Terrain terrain = new Terrain(mapWidth, mapHeight);
+        terrain.Generate();
 
         Raylib.InitWindow(ScreenWidth, ScreenHeight, "WaveFunctionCollapse");
 
@@ -31,10 +32,23 @@ public static class Program
         
         string credits = "By Matyrela";
         int textOffset = 5;
+        
+        bool pressed = false;
         while (!Raylib.WindowShouldClose())
         {
             Raylib.BeginDrawing();
             Raylib.ClearBackground(new Color(255,255,255,1));
+            
+            if(Raylib.IsKeyPressed(KeyboardKey.KEY_SPACE) && !pressed)
+            {
+                terrain.Generate();
+                pressed = true;
+            }
+            else if(!Raylib.IsKeyPressed(KeyboardKey.KEY_SPACE))
+            {
+                pressed = false;
+            }
+            
             terrain.Draw();
             
             Raylib.DrawText("Wave Function Collapse for terrain generation:", textOffset, 0, 15, new Color(255, 0, 0, 255));
