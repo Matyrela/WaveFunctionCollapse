@@ -41,8 +41,9 @@ public static class Program
             
             if(Raylib.IsKeyPressed(KeyboardKey.KEY_SPACE) && !pressed)
             {
-                terrain.Generate();
                 pressed = true;
+                terrain.Generate();
+                Console.WriteLine("Generated new map.");
             }
             else if(!Raylib.IsKeyPressed(KeyboardKey.KEY_SPACE))
             {

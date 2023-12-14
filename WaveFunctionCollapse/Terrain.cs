@@ -1,10 +1,12 @@
 using ZeroElectric.Vinculum;
+using static WaveFunctionCollapse.TerrainTypes;
+
 
 namespace WaveFunctionCollapse;
 
 public class Terrain
 {
-    int[,] Map;
+    TerrainTypes[,] Map;
     int Width;
     int Height;
     
@@ -19,13 +21,13 @@ public class Terrain
         Width = width;
         Height = height;
         
-        Map = new int[width, height];
+        Map = new TerrainTypes[width, height];
         
         for(int i = 0; i < width; i++)
         {
             for(int j = 0; j < height; j++)
             {
-                Map[i,j] = (int) TerrainTypes.Empty;
+                Map[i,j] = Empty;
             }
         }
         
@@ -41,67 +43,19 @@ public class Terrain
         {
             for(int j = 0; j < Height; j++)
             {
-                Map[i,j] = (int) TerrainTypes.Empty;
+                Map[i,j] = Empty;
             }
         }
         
-        Map[0, 0] = (int)TerrainTypes.Water;
+        Random rnd = new Random();
+
+        int[] centerCoords = new int[2];
+        centerCoords[0] = Width / 2;
+        centerCoords[1] = Height / 2;
+
+        Map[centerCoords[0], centerCoords[1]] = Grass;
+
         
-        for (int x = 0; x < Width; x++)
-        {
-            for (int y = 0; y < Height; y++)
-            {
-                switch (Map[x, y])
-                {
-                    case (int)TerrainTypes.Water:
-                        GenerateAdyacent(x, y, new int[] { (int)TerrainTypes.Water, (int)TerrainTypes.Sand }, new int[] { 90, 10 });
-                        break;
-                    
-                    case (int)TerrainTypes.Sand:
-                        GenerateAdyacent(x, y, new int[] { (int)TerrainTypes.Sand, (int)TerrainTypes.Grass }, new int[] { 90, 10 });
-                        break;
-                    
-                    case (int)TerrainTypes.Grass:
-                        GenerateAdyacent(x, y, new int[] { (int)TerrainTypes.Grass, (int)TerrainTypes.Rock }, new int[] { 90, 10 });
-                        break;
-                    
-                    case (int)TerrainTypes.Rock:
-                        GenerateAdyacent(x, y, new int[] { (int)TerrainTypes.Rock, (int)TerrainTypes.Grass }, new int[] { 90, 10 });
-                        break;
-                }
-            }
-        }
-    }
-
-    public void GenerateAdyacent(int x, int y, int[] possibleValues, int[] chances)
-    {
-        Random random = new Random();
-        int[] adyacentX = new int[] { x - 1, x + 1, x, x };
-        int[] adyacentY = new int[] { y, y, y - 1, y + 1 };
-
-        for (int i = 0; i < adyacentX.Length; i++)
-        {
-            if (adyacentX[i] >= 0 && adyacentX[i] < Width && adyacentY[i] >= 0 && adyacentY[i] < Height)
-            {
-                int value = Map[adyacentX[i], adyacentY[i]];
-                if (value == (int)TerrainTypes.Empty)
-                {
-                    int newValue = possibleValues[0];
-                    int chance = chances[0];
-
-                    for (int j = 0; j < possibleValues.Length; j++)
-                    {
-                        if (random.Next(0, 100) < chances[j])
-                        {
-                            newValue = possibleValues[j];
-                            chance = chances[j];
-                        }
-                    }
-
-                    Map[adyacentX[i], adyacentY[i]] = newValue;
-                }
-            }
-        }
     }
     
     public void Draw()
@@ -115,34 +69,28 @@ public class Terrain
                 
                 switch (Map[i, j])
                 {
-                    case (int)TerrainTypes.Water:
+                    case Water:
                         Raylib.DrawRectangle(x, y, CellSize, CellSize, new Color(0, 0, 255, 255));
                         break;
                     
-                    case (int)TerrainTypes.Sand:
+                    case Sand:
                         Raylib.DrawRectangle(x, y, CellSize, CellSize, new Color(255, 255, 0, 255));
                         break;
                     
-                    case (int)TerrainTypes.Grass:
+                    case Grass:
                         Raylib.DrawRectangle(x, y, CellSize, CellSize, new Color(0, 255, 0, 255));
                         break;
                     
-                    case (int)TerrainTypes.Rock:
+                    case Rock:
                         Raylib.DrawRectangle(x, y, CellSize, CellSize, new Color(128, 128, 128, 255));
                         break;
                     
                     default:
+                        Raylib.DrawRectangle(x, y, CellSize, CellSize, new Color(255, 0, 255, 255));
                         break;
                 }
                 
                 Raylib.DrawRectangleLines(x, y, CellSize, CellSize, new Color(0, 0, 0, 255));
-                
-                string text = Map[i,j].ToString();
-                int textWidth = Raylib.MeasureText(text, CellSize);
-                int textX = x + (CellSize - textWidth) / 2;
-                int textY = y + (CellSize - CellSize) / 2;
-
-                Raylib.DrawText(text, textX, textY, CellSize, new Color(0, 0, 0, 255));
             }
         }
     }
